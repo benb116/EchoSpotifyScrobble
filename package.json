@@ -1,0 +1,24 @@
+{
+  "name": "EchoSpotifyScrobble",
+  "description": "Scrobble songs played by spotify on an Amazon Echo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "compression": "^1.7.0",
+    "express": "^4.15.3",
+    "fs": "0.0.2",
+    "path": "^0.12.7",
+    "request": "^2.81.0"
+  },
+  "engines": {
+    "node": "5.4.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benb116/PennCourseSearch"
+  },
+  "devDependencies": {}
+}
