@@ -125,7 +125,7 @@ setInterval(function() {
               'timestamp' : Math.floor((new Date()).getTime() / 1000)
             }, function (err, scrobbles) {
               if (err) { return console.log('We\'re in trouble', err); }
-              console.log('We have just scrobbled:', scrobbles);
+              console.log('Scrobbled:', scrobbles);
             });
           }
 
@@ -138,7 +138,7 @@ setInterval(function() {
             'timestamp' : Math.floor((new Date()).getTime() / 1000)
           }, function (err, scrobbles) {
             if (err) { return console.log('We\'re in trouble', err); }
-            console.log('We have just updated now playing:', scrobbles);
+            console.log('Updated now playing:', scrobbles);
           });
 
           lastDuration = 0;
@@ -151,14 +151,27 @@ setInterval(function() {
         }
       }
     })
+    .catch(function(err) {
+      console.log(err);
+      spotifyApi.refreshAccessToken()
+      .then(function(data) {
+        console.log('The access token has been refreshed!');
+
+        // Save the access token so that it's used in future calls
+        spotifyApi.setAccessToken(data.body['access_token']);
+      }, function(err) {
+        console.log('Could not refresh access token', err);
+      });
+    })
   } else {
     spotifyApi.refreshAccessToken()
-      .then(function(data) {
-        tokenExpirationEpoch = (new Date().getTime() / 1000) + data.body['expires_in'];
-        console.log('Refreshed token. It now expires in ' + Math.floor(tokenExpirationEpoch - new Date().getTime() / 1000) + ' seconds!');
-      }, function(err) {
-        console.log('Could not refresh the token!', err.message);
-      });
-    console.log('no token')
+    .then(function(data) {
+      console.log('The access token has been refreshed!');
+
+      // Save the access token so that it's used in future calls
+      spotifyApi.setAccessToken(data.body['access_token']);
+    }, function(err) {
+      console.log('Could not refresh access token', err);
+    });
   }
 }, 5000);
