@@ -39,7 +39,7 @@ app.get('/login', function(req, res) {
     '?response_type=code' +
     '&client_id=' + config.CLIENTID + 
     '&scope=user-read-playback-state%20user-library-read%20user-read-private%20user-library-modify%20user-read-currently-playing%20user-modify-playback-state' +
-    '&redirect_uri=https:%2F%echo-spotify.herokuapp.com%2Fcallback%2F');
+    '&redirect_uri=https:%2F%2Fecho-spotify.herokuapp.com%2Fcallback%2F');
 });
 
 var authCode = '';
