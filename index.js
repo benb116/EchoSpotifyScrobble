@@ -10,6 +10,12 @@ try {
   config = require('./config.js');
 } catch (err) { // If there is no config file
   config = {};
+  config.CLIENTID = process.env.CLIENTID
+  config.CLIENTSECRET = process.env.CLIENTSECRET
+  config.LASTKEY = process.env.LASTKEY
+  config.LASTSEC = process.env.LASTSEC
+  config.LASTUSR = process.env.LASTUSR
+  config.LASTSES = process.env.LASTSES
 }
 
 var app = express();
