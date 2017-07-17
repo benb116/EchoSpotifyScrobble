@@ -33,7 +33,7 @@ app.get('/login', function(req, res) {
     '?response_type=code' +
     '&client_id=' + config.CLIENTID + 
     '&scope=user-read-playback-state%20user-library-read%20user-read-private%20user-library-modify%20user-read-currently-playing%20user-modify-playback-state' +
-    '&redirect_uri=http:%2F%2Flocalhost:5000%2Fcallback%2F');
+    '&redirect_uri=https:%2F%echo-spotify.herokuapp.com%2Fcallback%2F');
 });
 
 var authCode = '';
@@ -60,7 +60,7 @@ var lfm = new LastfmAPI({
   'secret' : config.LASTSEC
 });
 
-var lastAuthUrl = lfm.getAuthenticationUrl({ 'cb' : 'http://localhost:5000/lastcall/' });
+var lastAuthUrl = lfm.getAuthenticationUrl({ 'cb' : 'https://echo-spotify.herokuapp.com/lastcall/' });
 console.log(lastAuthUrl)
 
 app.get('/lastcall/', function(req, res) {
@@ -82,7 +82,7 @@ lfm.setSessionCredentials(config.LASTUSR, config.LASTSES);
 var spotifyApi = new SpotifyWebApi({
   clientId: config.CLIENTID,
   clientSecret: config.CLIENTSECRET,
-  redirectUri: 'http://localhost:5000/callback/'
+  redirectUri: 'https://echo-spotify.herokuapp.com/callback/'
 });
 
 // // First retrieve an access token
