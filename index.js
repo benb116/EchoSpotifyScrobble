@@ -39,7 +39,7 @@ app.get('/login', function(req, res) {
     '?response_type=code' +
     '&client_id=' + config.CLIENTID + 
     '&scope=user-read-playback-state%20user-library-read%20user-read-private%20user-library-modify%20user-read-currently-playing%20user-modify-playback-state' +
-    '&redirect_uri=https:%2F%2Fecho-spotify.herokuapp.com%2Fcallback%2F');
+    '&redirect_uri=http:%2F%2Fpenncoursesearch.com%2Flast%2Fcallback%2F');
 });
 
 var authCode = '';
@@ -66,7 +66,7 @@ var lfm = new LastfmAPI({
   'secret' : config.LASTSEC
 });
 
-var lastAuthUrl = lfm.getAuthenticationUrl({ 'cb' : 'https://echo-spotify.herokuapp.com/lastcall/' });
+var lastAuthUrl = lfm.getAuthenticationUrl({ 'cb' : 'http://penncoursesearch.com/last/lastcall/' });
 console.log(lastAuthUrl)
 
 app.get('/lastcall/', function(req, res) {
@@ -88,7 +88,7 @@ lfm.setSessionCredentials(config.LASTUSR, config.LASTSES);
 var spotifyApi = new SpotifyWebApi({
   clientId: config.CLIENTID,
   clientSecret: config.CLIENTSECRET,
-  redirectUri: 'https://echo-spotify.herokuapp.com/callback/'
+  redirectUri: 'http://penncoursesearch.com/last/callback/'
 });
 
 // // First retrieve an access token
