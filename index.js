@@ -34,7 +34,7 @@ app.listen(process.env.PORT || 5000, function(){
 var scopes = ['user-read-playback-state', 'user-library-read', 'user-read-private', 'user-library-modify', 'user-read-currently-playing', 'user-modify-playback-state'];
 
 // Handle main page requests
-app.get('/login', function(req, res) {
+app.get('//login', function(req, res) {
   res.redirect('https://accounts.spotify.com/authorize' + 
     '?response_type=code' +
     '&client_id=' + config.CLIENTID + 
@@ -54,7 +54,7 @@ var lastthresh = 12;
 
 var lastReady = false;
 
-app.get('/callback/', function(req, res) {
+app.get('//callback/', function(req, res) {
   // console.log(req.query.code);
   var authCode = req.query.code
   GetAccessToken(authCode);
@@ -69,7 +69,7 @@ var lfm = new LastfmAPI({
 var lastAuthUrl = lfm.getAuthenticationUrl({ 'cb' : 'http://penncoursesearch.com/last/lastcall/' });
 console.log(lastAuthUrl)
 
-app.get('/lastcall/', function(req, res) {
+app.get('//lastcall/', function(req, res) {
   var token = req.query.token;
   lfm.authenticate(token, function (err, session) {
     if (err) { throw err; }
