@@ -23,6 +23,11 @@ var app = express();
 // Set express settings
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 604800000 }));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 console.log('Express initialized');
 
@@ -51,7 +56,7 @@ var lastartist = '';
 var lasttrack = '';
 var lastalbum = '';
 var lastthresh = 12;
-
+var currentTempo = 0;
 var lastReady = false;
 
 app.get('//callback/', function(req, res) {
@@ -78,6 +83,22 @@ app.get('//lastcall/', function(req, res) {
     console.log(session); // {"name": "LASTFM_USERNAME", "key": "THE_USER_SESSION_KEY"}
   });
   return res.send('last-good');
+});
+
+app.get('//tempo/', function(req, res) {
+	if (spotifyApi.getAccessToken()) {						
+    		spotifyApi.getMyCurrentPlaybackState()
+    		.then(function(data) {
+		      if (data.body.is_playing) {	
+			var spotid = data.body.item.id;
+			 spotifyApi.getAudioFeaturesForTrack(spotid)
+		         .then(function(data) {
+        		 	return res.send(data.body.tempo.toString());
+      			 }, function(err) {
+		         });
+			}
+		});
+	}
 });
 
 lfm.setSessionCredentials(config.LASTUSR, config.LASTSES);
