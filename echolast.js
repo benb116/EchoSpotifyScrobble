@@ -191,7 +191,7 @@ setInterval(function() {
         spotifyApi.setAccessToken(data.body['access_token']);
       }, function(err) {
         console.log('Could not refresh access token', err);
-        GetAccessToken(theAuthCode);
+        GetAccessToken(authCode);
       });
     })
   } else {
@@ -201,7 +201,7 @@ setInterval(function() {
       spotifyApi.setAccessToken(data.body['access_token']);
     }, function(err) {
       console.log('Could not refresh access token', err);
-      GetAccessToken(theAuthCode);
+      GetAccessToken(authCode);
     });
   }
 }, 5000);
