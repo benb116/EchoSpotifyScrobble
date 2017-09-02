@@ -19,6 +19,7 @@ try {
 }
 
 var app = express();
+var authCode = '';
 
 // Set express settings
 app.use(compression());
@@ -37,6 +38,12 @@ app.listen(process.env.PORT || 5000, function(){
 });
 
 var scopes = ['user-read-playback-state', 'user-library-read', 'user-read-private', 'user-library-modify', 'user-read-currently-playing', 'user-modify-playback-state'];
+var domain = 'http://localhost:5000';
+var domainesc = 'http:%2F%2Flocalhost:5000';
+if (process.env.NODE_ENV === 'prod') {
+  domain = 'http://penncoursesearch.com/last';
+  domainesc = 'http:%2F%2Fpenncoursesearch.com%2Flast';
+}
 
 // Handle main page requests
 app.get('/login', function(req, res) {
@@ -44,7 +51,7 @@ app.get('/login', function(req, res) {
     '?response_type=code' +
     '&client_id=' + config.CLIENTID + 
     '&scope=user-read-playback-state%20user-library-read%20user-read-private%20user-library-modify%20user-read-currently-playing%20user-modify-playback-state' +
-    '&redirect_uri=http:%2F%2Fpenncoursesearch.com%2Flast%2Fcallback%2F');
+    '&redirect_uri=' + domainesc + '%2Fcallback%2F');
 });
 
 var authCode = '';
@@ -61,7 +68,7 @@ var lastReady = false;
 
 app.get('/callback/', function(req, res) {
   // console.log(req.query.code);
-  var authCode = req.query.code
+  authCode = req.query.code
   GetAccessToken(authCode);
   return res.send('good');
 });
@@ -70,9 +77,6 @@ var lfm = new LastfmAPI({
   'api_key' : config.LASTKEY,
   'secret' : config.LASTSEC
 });
-
-var lastAuthUrl = lfm.getAuthenticationUrl({ 'cb' : 'http://penncoursesearch.com/last/lastcall/' });
-console.log(lastAuthUrl)
 
 app.get('/lastcall/', function(req, res) {
   var token = req.query.token;
@@ -87,15 +91,16 @@ app.get('/lastcall/', function(req, res) {
 
 app.get('/tempo/', function(req, res) {
 	if (spotifyApi.getAccessToken()) {						
-    		spotifyApi.getMyCurrentPlaybackState()
-    		.then(function(data) {
-		      if (data.body.is_playing) {	
-			var spotid = data.body.item.id;
-			 spotifyApi.getAudioFeaturesForTrack(spotid)
-		         .then(function(data) {
-        		 	return res.send(data.body.tempo.toString());
-      			 }, function(err) {
-		         });
+    spotifyApi.getMyCurrentPlaybackState()
+		.then(function(data) {
+      if (data.body.is_playing) {	
+  			var spotid = data.body.item.id;
+	   		spotifyApi.getAudioFeaturesForTrack(spotid)
+        .then(function(data) {
+    		 	return res.send(data.body.tempo.toString());
+  			}, function(err) {
+          console.log('Tempo error: ' + err);
+        });
 			}
 		});
 	}
@@ -109,13 +114,13 @@ lfm.setSessionCredentials(config.LASTUSR, config.LASTSES);
 var spotifyApi = new SpotifyWebApi({
   clientId: config.CLIENTID,
   clientSecret: config.CLIENTSECRET,
-  redirectUri: 'http://penncoursesearch.com/last/callback/'
+  redirectUri: domain + '/callback/'
 });
 
 // // First retrieve an access token
 
-function GetAccessToken(authCode) {
-  spotifyApi.authorizationCodeGrant(authCode)
+function GetAccessToken(theAuthCode) {
+  spotifyApi.authorizationCodeGrant(theAuthCode)
     .then(function(data) {
       // console.log('Retrieved access token', data.body['access_token']);
 
@@ -125,7 +130,7 @@ function GetAccessToken(authCode) {
 
       // Save the amount of seconds until the access token expired
       tokenExpirationEpoch = (new Date().getTime() / 1000) + data.body['expires_in'];
-      console.log('Retrieved token. It expires in ' + Math.floor(tokenExpirationEpoch - new Date().getTime() / 1000) + ' seconds!');
+      // console.log('Retrieved token. It expires in ' + Math.floor(tokenExpirationEpoch - new Date().getTime() / 1000) + ' seconds!');
      
     })
     .catch(function(err) {
@@ -182,23 +187,21 @@ setInterval(function() {
       console.log(err);
       spotifyApi.refreshAccessToken()
       .then(function(data) {
-        console.log('The access token has been refreshed!');
-
         // Save the access token so that it's used in future calls
         spotifyApi.setAccessToken(data.body['access_token']);
       }, function(err) {
         console.log('Could not refresh access token', err);
+        GetAccessToken(theAuthCode);
       });
     })
   } else {
     spotifyApi.refreshAccessToken()
     .then(function(data) {
-      console.log('The access token has been refreshed!');
-
       // Save the access token so that it's used in future calls
       spotifyApi.setAccessToken(data.body['access_token']);
     }, function(err) {
       console.log('Could not refresh access token', err);
+      GetAccessToken(theAuthCode);
     });
   }
 }, 5000);
