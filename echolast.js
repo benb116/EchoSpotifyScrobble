@@ -67,7 +67,6 @@ var currentTempo = 0;
 var lastReady = false;
 
 app.get('/callback/', function(req, res) {
-  // console.log(req.query.code);
   authCode = req.query.code
   GetAccessToken(authCode);
   return res.send('good');
@@ -129,7 +128,7 @@ function GetAccessToken(theAuthCode) {
       spotifyApi.setRefreshToken(data.body['refresh_token']);
 
       // Save the amount of seconds until the access token expired
-      tokenExpirationEpoch = (new Date().getTime() / 1000) + data.body['expires_in'];
+      // tokenExpirationEpoch = (new Date().getTime() / 1000) + data.body['expires_in'];
       // console.log('Retrieved token. It expires in ' + Math.floor(tokenExpirationEpoch - new Date().getTime() / 1000) + ' seconds!');
      
     })
@@ -157,7 +156,7 @@ setInterval(function() {
               'timestamp' : Math.floor((new Date()).getTime() / 1000)
             }, function (err, scrobbles) {
               if (err) { return console.log('We\'re in trouble', err); }
-              console.log('Scrobbled:', scrobbles);
+              // console.log('Scrobbled:', scrobbles);
             });
           }
 
@@ -170,7 +169,7 @@ setInterval(function() {
             'timestamp' : Math.floor((new Date()).getTime() / 1000)
           }, function (err, scrobbles) {
             if (err) { return console.log('We\'re in trouble', err); }
-            console.log('Updated now playing:', scrobbles);
+            // console.log('Updated now playing:', scrobbles);
           });
 
           lastDuration = 0;
